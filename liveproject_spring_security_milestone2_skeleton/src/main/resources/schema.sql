@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `health_profile` (
   `username` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`));
 
-CREATE TABLE IF NOT EXISTS `heath_metric` (
+CREATE TABLE IF NOT EXISTS `health_metric` (
    `id` INT NOT NULL AUTO_INCREMENT,
    `value` DOUBLE NOT NULL,
    `type` VARCHAR(45) NOT NULL,
