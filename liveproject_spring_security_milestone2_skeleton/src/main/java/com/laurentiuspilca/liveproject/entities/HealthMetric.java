@@ -13,8 +13,10 @@ public class HealthMetric {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
+  @Basic
   private double value;
 
+  @Enumerated(EnumType.STRING)
   private HealthMetricType type;
 
   @ManyToOne
@@ -71,7 +73,7 @@ public class HealthMetric {
             "id=" + id +
             ", value=" + value +
             ", type=" + type +
-            ", profile=" + profile +
+            ", profile=" + profile.getUsername() +
             '}';
   }
 }
