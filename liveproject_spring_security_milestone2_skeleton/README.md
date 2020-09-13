@@ -1,76 +1,24 @@
 ## Milestone 2 - Secure the Business Logic of an application
-
-### Suggestions
-- I submitted a pull request with some minor code fixes for  the skeleton app
-https://github.com/lspil/liveproject_skeleton
-
-I also have some more involved suggestions for the skeleton app below. 
-
-#### Skeleton App begins  with security fully disabled
-
-- One  issue with the presupplied skeleton app is that it is already partially secured. 
- Because some dependencies  like the spring-boot-starter-security library are included,
- Spring will auto-configure security with the default UUID generated password in the logs.  
- This makes it difficult for a student to verify that the /metric and /profile endpoints work. 
  
- Disabling security makes it easy to understand how the base app works,
-  and also gives students the opportunity to add all those security related libraries and annotations themselves
 
-#### Easily Interrogating the endpoints with Swagger
-- building  the REST  requests  to test the /metric and /profile endpoints can be tedious.
-  if we enable swagger, the user can quickly test the functioning of the supplied app
-  
- http://localhost:7070/swagger-ui/
- 
- For example the swagger-ui makes it super easy to build the right JSON to post a metric 
- ```
-{
-  "id": 6,
-  "profile": {
-    "id": 2,
-    "username": "john"
-  },
-  "type": "BLOOD_OXYGEN_LEVEL",
-  "value": 92
-}
-```
-#### A populated database ready to run. (and a console for troubleshooting)    
-- There is a H2 database file  included in the skeleton repo which is referenced from the application.properties. 
-  but there's no TABLE schemas or data  population in the database so it's not particularly useful.
-  
-  I think it may be preferable to use an in-memory database with some data pre-populated
-   that always has a known initial state.
+###  Milestone 2.1  Endpoint for adding a new health profile (POST /profile):
+   **Security requirements:** 
+- Only the authenticated user can add a profile for themselves. 
+- Validate that another user can not add a profile for a different username than its own.
+- An user can be authenticated only if he previously registered in the system with a username and a password.
+
+#### Suggestions
+- there are three options of implementing a secured resource server as described in SSIA chapter 14.
+ https://livebook.manning.com/book/spring-security-in-action/chapter-14/ 
+- we can probably eliminate confusion by indicating in this case we intend to re-use the JWT access token implementation in milestone1.3
+- in the event a student was unable to complete milestone 1.3 you will probably need a sample oauth server they can use 
+- The student will need to export or publish the public key from the ssia.jks in milestone 1.3
+- the following tool is a convenient way of exploring a KeyStore and exporting a public key 
+   [https://keystore-explorer.org/index.html](Keystore-explorer) 
+
+#### Steps - 2.1 secure POST /profile
 
  
- # An alternate skeleton starting point 
-I also created a branch which has a skeleton app that's a little more friendly for students. 
-
-
-
-The main differences are :-
-- security disabled - so that users can easily access the /metric /profile endpoints
-- swagger enabled - so we can test the endpoints easily
-- a populated database - so the app is ready to test immediately 
-- a simple dev home page to link to swagger and H2-console pages
-     
-    
-
-### first steps
-- make a fork of the skeleton https://github.com/lspil/liveproject_skeleton/tree/master/liveproject_spring_security_milestone2_skeleton
-- from your github repo make a clone onto your workstation
-- try a quick build
-- run the app
-- hit the app endpoints in your browser/swagger/ostman 
-- TODO create some postman tests to test the endpoints
-- TODO create some unit tests to hit the endpoints 
-
-
-
-
-####  TODO Endpoint for adding a new health profile (POST /profile):
-*   **Security requirements:** Only the authenticated user can add a profile for themselves. 
-Validate that another user cannot add a profile for a different username than its own.
-An user can be authenticated only if he previously registered in the system with a username and a password.
 #####  
  
  
