@@ -2,7 +2,7 @@ package com.laurentiuspilca.liveproject.controllers;
 
 import com.laurentiuspilca.liveproject.entities.HealthProfile;
 import com.laurentiuspilca.liveproject.services.HealthProfileService;
-import org.springframework.security.core.Authentication;
+// TODO import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +26,9 @@ public class HealthProfileController {
   }
 
   @DeleteMapping("/{username}")
-  public void deleteHealthProfile(@PathVariable String username, Authentication a) {
+  // TODO re-enable after adding security
+  // public void deleteHealthProfile(@PathVariable String username, Authentication a) {
+  public void deleteHealthProfile(@PathVariable String username ) {
     healthProfileService.deleteHealthProfile(username);
   }
 }
