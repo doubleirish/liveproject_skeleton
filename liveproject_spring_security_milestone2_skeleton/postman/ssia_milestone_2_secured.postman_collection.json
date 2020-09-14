@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "access-token-password-grant john",
+			"name": "m2.1 access-token-password-grant john",
 			"event": [
 				{
 					"listen": "test",
@@ -49,8 +49,8 @@
 				"header": [
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
+						"type": "text",
+						"value": "application/json"
 					}
 				],
 				"url": {
@@ -87,7 +87,7 @@
 			"response": []
 		},
 		{
-			"name": "/profile/john (with john access_token) ->success",
+			"name": "m2.1 /profile/john (with john access_token) ->success",
 			"event": [
 				{
 					"listen": "test",
@@ -147,7 +147,7 @@
 			"response": []
 		},
 		{
-			"name": "access-token-password-grant alice",
+			"name": "m2.1 access-token-password-grant alice",
 			"event": [
 				{
 					"listen": "test",
@@ -228,7 +228,7 @@
 			"response": []
 		},
 		{
-			"name": "/profile - add  alice profile with alice token -> success",
+			"name": "m2.1 /profile - add  alice profile with alice token -> success",
 			"event": [
 				{
 					"listen": "test",
@@ -297,7 +297,7 @@
 			"response": []
 		},
 		{
-			"name": "/profile - add  bob profile with alice token ->fail auth",
+			"name": "m2.1 /profile - add  bob profile with alice token ->fail auth",
 			"event": [
 				{
 					"listen": "test",
@@ -360,6 +360,324 @@
 					"port": "7070",
 					"path": [
 						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.2 /profile/alice (with alice token) ->success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "52498116-f8b5-4d05-b69e-237a42e5a7f2",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"alice\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/alice",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"alice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.2 /profile/john (with alice token) ->fail auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2bc41006-b92e-4dc8-b69e-245a2ab8f842",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 403, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							" ",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/john",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"john"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.2 access-token-password-grant admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0a1ed783-765c-4e5f-8be0-e243cb588d5c",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"save tokens\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"Saving access token in response to 'token' environmental variable: \" + jsonData.access_token)",
+							"    pm.environment.set(\"access_token\", jsonData.access_token);",
+							"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/oauth/token?grant_type=password&username=admin&password=secret2&scope=read",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "username",
+							"value": "admin"
+						},
+						{
+							"key": "password",
+							"value": "secret2"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				},
+				"description": "The client requests an authorization token on behalf of a user "
+			},
+			"response": []
+		},
+		{
+			"name": "m2.2 /profile/dave (with admin token) ->success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eaeafc3a-0045-426a-acd4-82950f8736fd",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"dave\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/dave",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"dave"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.2 /profile/john (with admin token) ->success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "87224167-ba7a-4e9e-9de2-f1e36c66a5ac",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"alice\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/profile/john",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"profile",
+						"john"
 					]
 				}
 			},

@@ -146,7 +146,7 @@ public class ResourceServerConfig
 ```
 Now all resource endpoints require an authentication token, which requires a user to be authenticated
 This fulfills the following requirement  
-*An user can be authenticated only if he previously registered in the system with a username and a password*
+* An user can be authenticated only if he previously registered in the system with a username and a password*
 
 ### add logic to implement 'Only the authenticated user can add a profile for themselves'. 
 enable method level security
@@ -170,11 +170,18 @@ setup postman requests to perform the following
 - POST an alice profile with an alice token -> success
 - POST a  bob   profile with an alice token -> authentication failure
 
-#####  
+
  
  
 #####  Endpoint used to get details about a health profile by providing the username as an input value (GET /profile/{username}):
-*   **Security requirement:** The user can get the details of their health profile. An admin can get the details of any profile. A non-admin user cannot get details of other users’ profiles. An admin user is a user having authority “admin”.
+*   **Security requirement:** 
+- A user can get the details of their own health profile. 
+- An admin can get the details of any profile. 
+- A non-admin user cannot get details of other users’ profiles. 
+- An admin user is a user having authority “admin”.
+
+
+
 #####  Endpoint that the client can call to delete a specific health profile by providing the username as an input (DELETE /profile/{username}).
 *   **Security requirement:** Only an admin can call this endpoint. An admin user is a user having authority “admin”.
 #####  Endpoint that the client can call to add a new health metric record (POST /metric). 

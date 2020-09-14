@@ -29,7 +29,7 @@ public class HealthProfileService {
       throw new HealthProfileAlreadyExistsException("This health profile already exists.");
     }
   }
-
+  @PreAuthorize("#username == authentication.principal or hasAuthority('ROLE_ADMIN')")
   public HealthProfile findHealthProfile(String username) {
     Optional<HealthProfile> healthProfile =
             healthProfileRepository.findHealthProfileByUsername(username);

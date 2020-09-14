@@ -26,6 +26,7 @@ public class HealthProfileController {
   @GetMapping("/{username}")
   public HealthProfile findHealthProfile(@PathVariable String username, Authentication authentication) {
     log.info("profile-user={}, authentication-user={} ",username, authentication.getPrincipal());
+    log.info("authorities {} ", authentication.getAuthorities());
     return healthProfileService.findHealthProfile(username);
   }
 
