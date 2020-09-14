@@ -7,18 +7,169 @@
 - Validate that another user can not add a profile for a different username than its own.
 - An user can be authenticated only if he previously registered in the system with a username and a password.
 
+####  mini milestone Timings
+1. build enhanced skeleton with swagger, populated db, H2 console, postman tests (8 hours)
+
+mini milestones
+1. secure the resource server with JWT public key -> research and coding (2 hours)
+1. posting health profile. -> enabling method security , creating SPel and postman tests (1 hour)
+
+
 #### Suggestions
 - there are three options of implementing a secured resource server as described in SSIA chapter 14.
  https://livebook.manning.com/book/spring-security-in-action/chapter-14/ 
 - we can probably eliminate confusion by indicating in this case we intend to re-use the JWT access token implementation in milestone1.3
 - in the event a student was unable to complete milestone 1.3 you will probably need a sample oauth server they can use 
 - The student will need to export or publish the public key from the ssia.jks in milestone 1.3
-- the following tool is a convenient way of exploring a KeyStore and exporting a public key 
+- the following tool is another convenient way of exploring a KeyStore and exporting a public key 
    [https://keystore-explorer.org/index.html](Keystore-explorer) 
 
 #### Steps - 2.1 secure POST /profile
 
- 
+#### review SSIA section 15.2.3
+
+https://livebook.manning.com/book/spring-security-in-action/chapter-15/v-7/117
+
+#### add the security related dependencies 
+
+```  
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-oauth2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-data</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-jwt</artifactId>
+            <version>1.1.1.RELEASE</version>
+        </dependency>
+
+
+   <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-data</artifactId>
+   </dependency>
+
+   <dependency>
+      <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+   </dependency>
+  
+```
+and the cloud BOM
+```
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Hoxton.SR1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+```
+
+#### add a public key 
+extract the public key from the ssia.jks keystore created in milestone 1.3
+```
+keytool -list -rfc --keystore ssia.jks | openssl x509 -inform pem -pubkey
+```
+and save it as file ssia.pem in src/main/resources so you can later inject it into your JWT bean
+
+alternatively you can publish the public key in your OAuth server and load it from the resource server
+
+
+#### define the Configuration for a ResourceServer
+```
+package com.laurentiuspilca.liveproject.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import static com.nimbusds.jose.util.IOUtils.readInputStreamToString;
+
+@Configuration
+@EnableResourceServer
+public class ResourceServerConfig
+        extends ResourceServerConfigurerAdapter {
+   // you can also load in  key as an  @Value by pasting the PEM into a field in application.properties 
+    @Bean  
+    public String publicKey()  {
+        String publicKey;
+        try {
+            publicKey = readInputStreamToString(new ClassPathResource("ssia.pem").getInputStream());
+        } catch (Exception e){
+            throw new RuntimeException(e);
+        }
+       return publicKey;
+    }
+
+    @Override
+    public void configure(ResourceServerSecurityConfigurer resources) {
+        resources.tokenStore(tokenStore());
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new JwtTokenStore(
+                jwtAccessTokenConverter());
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtAccessTokenConverter()  {
+        var converter = new JwtAccessTokenConverter();
+        converter.setVerifierKey( publicKey());
+        return converter;
+    }
+}
+
+```
+Now all resource endpoints require an authentication token, which requires a user to be authenticated
+This fulfills the following requirement  
+*An user can be authenticated only if he previously registered in the system with a username and a password*
+
+### add logic to implement 'Only the authenticated user can add a profile for themselves'. 
+enable method level security
+```
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class ProjectConfig {
+} 
+```
+Add a @PreAuthorize annotation to compare the profile username and the authentication principal
+```
+public class HealthProfileService {
+...
+  @PreAuthorize("#profile.username == authentication.principal")
+  public void addHealthProfile(HealthProfile profile) {
+```
+
+### Validate that another user can't add a profile for a different username than its self.
+setup postman requests to perform the following
+- request an access token for 'alice' who doesn't have a profile yet 
+- POST an alice profile with an alice token -> success
+- POST a  bob   profile with an alice token -> authentication failure
+
 #####  
  
  
