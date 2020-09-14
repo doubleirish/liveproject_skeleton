@@ -4,6 +4,7 @@ import com.laurentiuspilca.liveproject.entities.HealthProfile;
 import com.laurentiuspilca.liveproject.exceptions.HealthProfileAlreadyExistsException;
 import com.laurentiuspilca.liveproject.exceptions.NonExistentHealthProfileException;
 import com.laurentiuspilca.liveproject.repositories.HealthProfileRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,7 @@ public class HealthProfileService {
   public HealthProfileService(HealthProfileRepository healthProfileRepository) {
     this.healthProfileRepository = healthProfileRepository;
   }
-
+  @PreAuthorize("#profile.username == authentication.principal")
   public void addHealthProfile(HealthProfile profile) {
     Optional<HealthProfile> healthProfile = healthProfileRepository.findHealthProfileByUsername(profile.getUsername());
 
