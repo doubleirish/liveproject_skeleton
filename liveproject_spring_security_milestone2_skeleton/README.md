@@ -227,6 +227,15 @@ public class HealthProfileService {
 ###  Endpoint that the client can call to add a new health metric record (POST /metric). 
 *   **Security requirement:** A health metric record can only be added for the authenticated user.
 
+Add the @PreAuthorize method security 
+```
+@PreAuthorize("#healthMetric.profile.username == authentication.principal")
+  public void addHealthMetric(HealthMetric healthMetric) {
+```
+Add Postman tests 
+- get a token for john
+- post a metric for jane user -> auth fail
+- post a metric for john user -> success
 
 ###  Endpoint that the client can call to retrieve the health metrics history of a user (GET /metric/{username}). 
 *   **Security requirement:** The client can get the health metric records only for the authenticated user.
