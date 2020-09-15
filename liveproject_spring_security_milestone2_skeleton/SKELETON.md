@@ -25,13 +25,9 @@ I also have some more involved suggestions for the skeleton app below.
  For example the swagger-ui makes it super easy to build the right JSON to post a metric 
  ```
 {
-  "id": 6,
-  "profile": {
-    "id": 2,
-    "username": "john"
-  },
+  "profile": { "username": "john"},
   "type": "BLOOD_OXYGEN_LEVEL",
-  "value": 92
+  "value": 99
 }
 ```
 #### A populated database ready to run. (and a console for troubleshooting)    
