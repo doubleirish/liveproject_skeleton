@@ -1,0 +1,212 @@
+{
+	"info": {
+		"_postman_id": "fb31cba4-b942-439c-8e6f-599668f612db",
+		"name": "ssia_milestone_2_secured_4_add_metric",
+		"description": " Endpoint that the client can call to add a new health metric record (POST /metric). \n*   **Security requirement:** A health metric record can only be added for the authenticated user.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "m2.4 access-token-password-grant john",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b1fb5d4b-26a2-4330-be7c-31eca0bb9c4c",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"save tokens\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"Saving access token in response to 'token' environmental variable: \" + jsonData.access_token)",
+							"    pm.environment.set(\"access_token\", jsonData.access_token);",
+							"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/oauth/token?grant_type=password&username=john&password=12345&scope=read",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "username",
+							"value": "john"
+						},
+						{
+							"key": "password",
+							"value": "12345"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				},
+				"description": "The client requests an authorization token on behalf of a user "
+			},
+			"response": []
+		},
+		{
+			"name": "m2.4 /metric add jane metric (as john)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c4110a16-0299-4ea1-b75f-3f759a9408ed",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 403, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							" ",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"profile\": { \"username\": \"jane\"},\n  \"type\": \"BLOOD_OXYGEN_LEVEL\",\n  \"value\": 99\n}"
+				},
+				"url": {
+					"raw": "localhost:7070/metric",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"metric"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.4 /metric add john metric (as john)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc07ae7e-5c54-4149-ac3a-3106dfa085e7",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"profile\": { \"username\": \"john\"},\n  \"type\": \"BLOOD_OXYGEN_LEVEL\",\n  \"value\": 99\n}"
+				},
+				"url": {
+					"raw": "localhost:7070/metric",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"metric"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
