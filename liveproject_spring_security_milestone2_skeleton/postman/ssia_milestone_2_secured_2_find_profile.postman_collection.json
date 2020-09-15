@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "m2.1 access-token-password-grant alice Copy",
+			"name": "m2.2 access-token-password-grant jane",
 			"event": [
 				{
 					"listen": "test",
@@ -55,7 +55,7 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:8080/oauth/token?grant_type=password&username=alice&password=swordfish&scope=read",
+					"raw": "localhost:8080/oauth/token?grant_type=password&username=jane&password=swordfish&scope=read",
 					"host": [
 						"localhost"
 					],
@@ -71,7 +71,7 @@
 						},
 						{
 							"key": "username",
-							"value": "alice"
+							"value": "jane"
 						},
 						{
 							"key": "password",
@@ -88,7 +88,7 @@
 			"response": []
 		},
 		{
-			"name": "m2.2 /profile/alice (with alice token) ->success",
+			"name": "m2.2 /profile/jane (with jane token) ->success",
 			"event": [
 				{
 					"listen": "test",
@@ -102,7 +102,7 @@
 							" ",
 							"",
 							"pm.test(\"Body contains string\",() => {",
-							"  pm.expect(pm.response.text()).to.include(\"alice\");",
+							"  pm.expect(pm.response.text()).to.include(\"jane\");",
 							"});"
 						],
 						"type": "text/javascript"
@@ -134,21 +134,21 @@
 					}
 				],
 				"url": {
-					"raw": "localhost:7070/profile/alice",
+					"raw": "localhost:7070/profile/jane",
 					"host": [
 						"localhost"
 					],
 					"port": "7070",
 					"path": [
 						"profile",
-						"alice"
+						"jane"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "m2.2 /profile/john (with alice token) ->fail auth",
+			"name": "m2.2 /profile/john (with jane token) ->fail auth",
 			"event": [
 				{
 					"listen": "test",
@@ -360,7 +360,7 @@
 							" ",
 							"",
 							"pm.test(\"Body contains string\",() => {",
-							"  pm.expect(pm.response.text()).to.include(\"alice\");",
+							"  pm.expect(pm.response.text()).to.include(\"john\");",
 							"});"
 						],
 						"type": "text/javascript"

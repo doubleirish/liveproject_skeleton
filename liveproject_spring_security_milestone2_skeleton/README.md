@@ -239,6 +239,8 @@ Add Postman tests
 
 ###  Endpoint that the client can call to retrieve the health metrics history of a user (GET /metric/{username}). 
 *   **Security requirement:** The client can get the health metric records only for the authenticated user.
+
+
 ###  Endpoint that the client can call to delete the metric history of a user (DELETE /metric/username).
 *   **Security requirement:** Only an admin user can call this endpoint to delete the history of any user of the app.
 ###  Endpoint that a system can call to send a list of health advice. A health advice has the username and a text description of the advice (POST /advice).

@@ -360,19 +360,15 @@
 						"value": "application/json"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{  \n  \"username\": \"alice\"\n}"
-				},
 				"url": {
-					"raw": "localhost:7070/profile/dave",
+					"raw": "localhost:7070/profile/deleteme",
 					"host": [
 						"localhost"
 					],
 					"port": "7070",
 					"path": [
 						"profile",
-						"dave"
+						"deleteme"
 					]
 				}
 			},
