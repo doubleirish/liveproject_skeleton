@@ -31,8 +31,6 @@ public class HealthProfileController {
   }
 
   @DeleteMapping("/{username}")
-  // TODO re-enable after adding security
-  // public void deleteHealthProfile(@PathVariable String username, Authentication a) {
   public void deleteHealthProfile(@PathVariable String username ) {
     healthProfileService.deleteHealthProfile(username);
   }
