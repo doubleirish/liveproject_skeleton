@@ -8,11 +8,17 @@
 - An user can be authenticated only if he previously registered in the system with a username and a password.
 
 ####  mini milestone Timings
+(provided)
 1. build enhanced skeleton with swagger, populated db, H2 console, postman tests (8 hours)
 
+
+1. (step 0) secure the resource server with JWT public key -> research and coding (2 hours)
+
 mini milestones
-1. secure the resource server with JWT public key -> research and coding (2 hours)
-1. posting health profile. -> enabling method security , creating SPel and postman tests (1 hour)
+1. creating health profile for self only-> enabling method security , creating SPel and postman tests (1 hour)
+1. finding any health profile when admin user.  @PreAuthorize and  postman tests (1 hour)
+1. only a user with admin role can delete a health profile.  @PreAuthorize and  postman tests (1 hour)
+
 
 
 #### Suggestions
@@ -24,7 +30,7 @@ mini milestones
 - the following tool is another convenient way of exploring a KeyStore and exporting a public key 
    [https://keystore-explorer.org/index.html](Keystore-explorer) 
 
-#### Steps - 2.1 secure POST /profile
+### Steps - 2.1 secure POST /profile
 
 #### review SSIA section 15.2.3
 
@@ -164,7 +170,7 @@ public class HealthProfileService {
   public void addHealthProfile(HealthProfile profile) {
 ```
 
-### Validate that another user can't add a profile for a different username than its self.
+#### Validate that another user can't add a profile for a different username than its self.
 setup postman requests to perform the following
 - request an access token for 'alice' who doesn't have a profile yet 
 - POST an alice profile with an alice token -> success
@@ -173,22 +179,58 @@ setup postman requests to perform the following
 
  
  
-#####  Endpoint used to get details about a health profile by providing the username as an input value (GET /profile/{username}):
+###  Endpoint used to get details about a health profile by providing the username as an input value (GET /profile/{username}):
 *   **Security requirement:** 
 - A user can get the details of their own health profile. 
 - An admin can get the details of any profile. 
 - A non-admin user cannot get details of other users’ profiles. 
 - An admin user is a user having authority “admin”.
+#### implement method security 
+```
+public class HealthProfileService {
+ 
+  @PreAuthorize("#username == authentication.principal or hasAuthority('ROLE_ADMIN')")
+  public HealthProfile findHealthProfile(String username) {
+```
+
+#### Add postman tests
+
+- password grant token for alice
+- find alice profile as alice e-> success
+- find bob profile as alice -> auth fail
+- password grant token for admin
+- find alice profile as admin -> success
+- find bob profile as admin ->  success
+
+###  Endpoint that the client can call to delete a specific health profile by providing the username as an input (DELETE /profile/{username}).
+*   **Security requirement:** 
+- Only an admin can call the DELETE /profile/username endpoint. 
+- An admin user is a user having authority “admin”.
+
+#### Implement method security on delete method
+
+```
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+  public void deleteHealthProfile(String username) {
+```
+#### Add Postman tests
+- on oauth server get a password grant token for alice
+- on resource server attempt to delete /profile/bob as alice ->fail
+- on resource server attempt to delete /profile/alice as alice ->fail
+
+- on oauth server get a password grant token for admin
+- on resource server attempt create a new /profile/xyz as admin -> success
+- on resource server attempt to delete /profile/xyz as admin ->success
+ 
 
 
-
-#####  Endpoint that the client can call to delete a specific health profile by providing the username as an input (DELETE /profile/{username}).
-*   **Security requirement:** Only an admin can call this endpoint. An admin user is a user having authority “admin”.
-#####  Endpoint that the client can call to add a new health metric record (POST /metric). 
+###  Endpoint that the client can call to add a new health metric record (POST /metric). 
 *   **Security requirement:** A health metric record can only be added for the authenticated user.
-#####  Endpoint that the client can call to retrieve the health metrics history of a user (GET /metric/{username}). 
+
+
+###  Endpoint that the client can call to retrieve the health metrics history of a user (GET /metric/{username}). 
 *   **Security requirement:** The client can get the health metric records only for the authenticated user.
-#####  Endpoint that the client can call to delete the metric history of a user (DELETE /metric/username).
+###  Endpoint that the client can call to delete the metric history of a user (DELETE /metric/username).
 *   **Security requirement:** Only an admin user can call this endpoint to delete the history of any user of the app.
-#####  Endpoint that a system can call to send a list of health advice. A health advice has the username and a text description of the advice (POST /advice).
+###  Endpoint that a system can call to send a list of health advice. A health advice has the username and a text description of the advice (POST /advice).
 *   **Security requirement:** Someone can call this endpoint using a token generated with the client credentials grant type if they have the scope “advice”.
