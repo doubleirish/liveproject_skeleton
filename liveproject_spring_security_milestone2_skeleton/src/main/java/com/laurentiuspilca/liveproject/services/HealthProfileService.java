@@ -38,6 +38,7 @@ public class HealthProfileService {
             .orElseThrow(() -> new NonExistentHealthProfileException("No profile found for the provided username."));
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public void deleteHealthProfile(String username) {
     Optional<HealthProfile> healthProfile =
             healthProfileRepository.findHealthProfileByUsername(username);
