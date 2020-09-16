@@ -1,0 +1,309 @@
+{
+	"info": {
+		"_postman_id": "d1a32038-3481-4138-92be-ffcefa0c2fb3",
+		"name": "ssia_milestone_2_secured_7_client_advice",
+		"description": "Endpoint that the client can call to delete a specific health profile by providing the username as an input (DELETE /profile/{username}).\n*   **Security requirement:** \n- Only an admin can call the DELETE /profile/username endpoint. \n- An admin user is a user having authority “admin”.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "m2.7 access-token-client-credential-grant client2 with \"advice\" scope",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8c38027c-4649-4d49-998a-389a9b4a153c",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"save client access_token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"Saving access_token from response into 'access_token' environmental variable: \" + jsonData.access_token)",
+							"    pm.environment.set(\"access_token\", jsonData.access_token);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "client2",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth/token?grant_type=client_credentials&scope=advice",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "scope",
+							"value": "advice"
+						}
+					]
+				},
+				"description": "The client requests an authorization token on behalf of a user "
+			},
+			"response": []
+		},
+		{
+			"name": "m2.7 /advice endpoint with \"advice\" scope ->success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "57fa964e-5260-4a86-a0e2-624677cc651e",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b9decdc4-9c04-4b76-92f4-162c7e7b88bd",
+						"exec": [
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"advice\": \"some advice\",\n    \"username\": \"john\"\n  },\n  {\n    \"advice\": \"more advice\",\n    \"username\": \"jane\"\n  }\n]"
+				},
+				"url": {
+					"raw": "localhost:7070/advice",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"advice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.7 access-token-client-credential-grant client1 with \"read\" scope Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6f13a8b0-6da0-4504-8fb6-00d5dd701843",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"save client access_token\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"Saving access_token from response into 'access_token' environmental variable: \" + jsonData.access_token)",
+							"    pm.environment.set(\"access_token\", jsonData.access_token);",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/oauth/token?grant_type=client_credentials&scope=read",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				},
+				"description": "The client requests an authorization token on behalf of a user "
+			},
+			"response": []
+		},
+		{
+			"name": "m2.7 /advice endpoint with \"read\" scope -> failure",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "52fbc044-1e27-410e-8df8-7897527e134d",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 403, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "df4b038a-263b-4eb1-b6be-cfc9779681cb",
+						"exec": [
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"advice\": \"some advice\",\n    \"username\": \"john\"\n  },\n  {\n    \"advice\": \"more advice\",\n    \"username\": \"jane\"\n  }\n]"
+				},
+				"url": {
+					"raw": "localhost:7070/advice",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"advice"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c3305d96-3159-4107-bb2b-2c96aad6a60b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5faaad2c-9645-4d17-ac27-7fbb4ae7ef27",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

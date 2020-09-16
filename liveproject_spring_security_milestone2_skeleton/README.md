@@ -1,15 +1,26 @@
 ## Milestone 2 - Secure the Business Logic of an application
  
 
-###  Milestone 2.1  Endpoint for adding a new health profile (POST /profile):
-   **Security requirements:** 
-- Only the authenticated user can add a profile for themselves. 
-- Validate that another user can not add a profile for a different username than its own.
-- An user can be authenticated only if he previously registered in the system with a username and a password.
+#### Suggestions
+- the diagram in the milestone 2 document seems to imply other servers like gateway are involved.    
+  we may want to update the diagram  to only show the Resource and Oauth servers
+  
+- there are three options of implementing a secured resource server as described in SSIA chapter 14.
+ https://livebook.manning.com/book/spring-security-in-action/chapter-14/ 
+ we can probably eliminate any potential  confusion by indicating in  milestone 2 we intend to re-use the final JWT access-token based OAuth2 server implementation in milestone1.3
 
-####  mini milestone Timings
+- in the event a student was unable to complete milestone 1.3, we may need a sample oauth server they can use so they're not stuck.
+   
+-Some of the 7  requirements reference "client" which can be easily confused with 
+    I think only the last requirement means "client" in terms of an OAuth2 "Client" with OAuth2 client-credentials.
+    if we change the name client to user anywhere in the first 6 requirements it might prevent confusion
+
+
+
+ 
+####  mini milestone/requirement Timings
 (provided)
-1. build enhanced skeleton with swagger, populated db, H2 console, postman tests (8 hours)
+1. build an enhanced skeleton with populated db, H2 console, postman tests (8 hours)
 
 
 1. (step 0) secure the resource server with JWT public key -> research and coding (2 hours)
@@ -18,17 +29,18 @@ mini milestones
 1. creating health profile for self only-> enabling method security , creating SPel and postman tests (1 hour)
 1. finding any health profile when admin user.  @PreAuthorize and  postman tests (1 hour)
 1. only a user with admin role can delete a health profile.  @PreAuthorize and  postman tests (1 hour)
+1. a user can only create metrics for themselves .  @PreAuthorize and  postman tests (1 hour)
+1. can get the health metric records only for the authenticated user. (code/postman tests 10 mins)
+1. only an "admin" style user can delete any user's metric history (code/postman tests 20 mins)
+1. use client with "advice" scoped token to  access  advice service (code/postman tests 40 mins)
 
 
-
-#### Suggestions
-- there are three options of implementing a secured resource server as described in SSIA chapter 14.
- https://livebook.manning.com/book/spring-security-in-action/chapter-14/ 
-- we can probably eliminate confusion by indicating in this case we intend to re-use the JWT access token implementation in milestone1.3
-- in the event a student was unable to complete milestone 1.3 you will probably need a sample oauth server they can use 
-- The student will need to export or publish the public key from the ssia.jks in milestone 1.3
-- the following tool is another convenient way of exploring a KeyStore and exporting a public key 
-   [https://keystore-explorer.org/index.html](Keystore-explorer) 
+###  Milestone 2.1  Endpoint for adding a new health profile (POST /profile):
+   **Security requirements:** 
+- Only the authenticated user can add a profile for themselves. 
+- Validate that another user can not add a profile for a different username than its own.
+- An user can be authenticated only if he previously registered in the system with a username and a password.
+ 
 
 ### Steps - 2.1 secure POST /profile
 
@@ -93,6 +105,11 @@ extract the public key from the ssia.jks keystore created in milestone 1.3
 ```
 keytool -list -rfc --keystore ssia.jks | openssl x509 -inform pem -pubkey
 ```
+
+or you can use the following UI tool for exporing the keystore and extracting the public key 
+ 
+   [https://keystore-explorer.org/index.html](Keystore-explorer) 
+
 and save it as file ssia.pem in src/main/resources so you can later inject it into your JWT bean
 
 alternatively you can publish the public key in your OAuth server and load it from the resource server
@@ -227,21 +244,68 @@ public class HealthProfileService {
 ###  Endpoint that the client can call to add a new health metric record (POST /metric). 
 *   **Security requirement:** A health metric record can only be added for the authenticated user.
 
-Add the @PreAuthorize method security 
+#### Add the @PreAuthorize method security 
 ```
 @PreAuthorize("#healthMetric.profile.username == authentication.principal")
   public void addHealthMetric(HealthMetric healthMetric) {
 ```
-Add Postman tests 
+#### Add Postman tests 
 - get a token for john
 - post a metric for jane user -> auth fail
 - post a metric for john user -> success
 
 ###  Endpoint that the client can call to retrieve the health metrics history of a user (GET /metric/{username}). 
-*   **Security requirement:** The client can get the health metric records only for the authenticated user.
+*   **Security requirement:** 
+The client can get the health metric records only for the authenticated user.
+
+
+#### Add the @PreAuthorize method security 
+```
+  @PreAuthorize("#username == authentication.principal")
+  public List<HealthMetric> findHealthMetricHistory(String username) {
+```
+#### Add Postman tests 
+- get a token for jane
+- find metric for john (as jane) -> auth fail
+- find metric for jane (as jane) -> success
 
 
 ###  Endpoint that the client can call to delete the metric history of a user (DELETE /metric/username).
-*   **Security requirement:** Only an admin user can call this endpoint to delete the history of any user of the app.
+*   **Security requirement:** 
+Only an admin user can call this endpoint to delete the history of any user of the app.
+
+#### Add the @PreAuthorize method security 
+```
+  @PreAuthorize("#username == authentication.principal")
+  public List<HealthMetric> findHealthMetricHistory(String username) {
+```
+#### Add Postman tests 
+- get a token for jane
+- delete metric for john (as jane) -> auth fail
+- find metric for jane (as jane) -> auth fail
+
+- get a token for admin
+- delete metric for deleteme2 (as admin) -> success
+
 ###  Endpoint that a system can call to send a list of health advice. A health advice has the username and a text description of the advice (POST /advice).
-*   **Security requirement:** Someone can call this endpoint using a token generated with the client credentials grant type if they have the scope “advice”.
+*   **Security requirement:** 
+Someone can call this endpoint using a token generated with the client credentials grant type 
+if they have the scope “advice”.
+#### create a client on the oauth server with "advice" scope
+```
+insert into CLIENT (ID, NAME, SECRET, REDIRECT_URI, SCOPE)
+values (2, 'client2','{bcrypt}$2a$10$CVLUeCYqZQpLRm0PpaXXTuvskBujQelGhmxoCXXU0RylBrTQOiqQW' ,'http://localhost:8181/', 'advice');
+
+```
+#### Add  a @PreAuthorize to secure the /advice controller 
+```
+  @PreAuthorize("#oauth2.hasScope('advice')")
+  @PostMapping
+  public void provideHealthAdviceCallback(@RequestBody List<HealthAdvice> healthAdvice, Authentication authentication) {
+ 
+```
+#### add postman tests
+- create client_credentials token for client user without "advice" scope
+- POST /advice -> fail (forbidden)
+- create client_credentials token for client2 user with  "advice" scope
+- POST /advice -> success

@@ -23,6 +23,7 @@ public class HealthMetricService {
     this.healthMetricRepository = healthMetricRepository;
     this.healthProfileRepository = healthProfileRepository;
   }
+
   @PreAuthorize("#healthMetric.profile.username == authentication.principal")
   public void addHealthMetric(HealthMetric healthMetric) {
     final String username = healthMetric.getProfile().getUsername();
@@ -41,10 +42,13 @@ public class HealthMetricService {
     ;
   }
 
+
+  @PreAuthorize("#username == authentication.principal")
   public List<HealthMetric> findHealthMetricHistory(String username) {
     return healthMetricRepository.findHealthMetricHistory(username);
   }
 
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
   public void deleteHealthMetricForUser(String username) {
     Optional<HealthProfile> profile = healthProfileRepository.findHealthProfileByUsername(username);
 

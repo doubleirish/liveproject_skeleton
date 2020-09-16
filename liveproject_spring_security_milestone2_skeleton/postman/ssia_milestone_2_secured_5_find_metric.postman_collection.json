@@ -1,0 +1,231 @@
+{
+	"info": {
+		"_postman_id": "44e22d84-06bb-4b58-86f9-6e252e55be1e",
+		"name": "ssia_milestone_2_secured_5_find_metric",
+		"description": "Endpoint used to get details about a health profile by providing the username as an input value (GET /profile/{username}):\n*   **Security requirement:** \n- A user can get the details of their own health profile. \n- An admin can get the details of any profile. \n- A non-admin user cannot get details of other users’ profiles. \n- An admin user is a user having authority “admin”.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "m2.5 access-token-password-grant jane",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b49b518c-c640-4005-ae92-3d4732e12376",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"save tokens\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    console.log(\"Saving access token in response to 'token' environmental variable: \" + jsonData.access_token)",
+							"    pm.environment.set(\"access_token\", jsonData.access_token);",
+							"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:8080/oauth/token?grant_type=password&username=jane&password=swordfish&scope=read",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "grant_type",
+							"value": "password"
+						},
+						{
+							"key": "username",
+							"value": "jane"
+						},
+						{
+							"key": "password",
+							"value": "swordfish"
+						},
+						{
+							"key": "scope",
+							"value": "read"
+						}
+					]
+				},
+				"description": "The client requests an authorization token on behalf of a user "
+			},
+			"response": []
+		},
+		{
+			"name": "m2.5 /metric/john (with jane token) ->fail auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d9a7ff27-9e6a-48da-8759-81325ffc94a5",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 403, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							" ",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/metric/john",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"metric",
+						"john"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "m2.5 /metric/jane (with jane token) ->success",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "43241388-833a-4760-9697-34e1049d0253",
+						"exec": [
+							"",
+							"pm.test(\"Expecting Status code of 200, was \"+ pm.response.code, function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							" ",
+							"",
+							"pm.test(\"Body contains string\",() => {",
+							"  pm.expect(pm.response.text()).to.include(\"jane\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:7070/metric/jane",
+					"host": [
+						"localhost"
+					],
+					"port": "7070",
+					"path": [
+						"metric",
+						"jane"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "299086e1-812e-4288-b511-b9b3b92b029a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9dfb5581-30ce-4182-a9c8-91505dbbdc57",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
