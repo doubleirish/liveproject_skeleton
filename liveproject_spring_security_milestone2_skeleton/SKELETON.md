@@ -25,11 +25,9 @@ I also have some more involved suggestions for the skeleton app below.
  For example the swagger-ui makes it super easy to build the right JSON to post a metric 
  ```
 {
-  "profile": {
-    "username": "john"
-  },
+  "profile": { "username": "john"},
   "type": "BLOOD_OXYGEN_LEVEL",
-  "value": 92
+  "value": 99
 }
 ```
 #### A populated database ready to run. (and a console for troubleshooting)    
@@ -53,7 +51,7 @@ The main differences are :-
 - from your github repo make a clone onto your workstation
 - try a quick build
 - run the app
-- hit the app endpoints in your browser/swagger/ostman 
+- hit the app endpoints in your browser/swagger/postman 
 - create some postman tests to test the endpoints
 - TODO create some unit tests to hit the endpoints 
 

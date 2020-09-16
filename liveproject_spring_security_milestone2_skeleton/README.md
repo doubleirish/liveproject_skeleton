@@ -3,17 +3,17 @@
 
 #### Suggestions
 - the diagram in the milestone 2 document seems to imply other servers like gateway are involved.    
-  we may want to update the diagram  to only show the Resource and Oauth servers
+  We may want to update the diagram  to only show the Resource and OAuth servers
   
 - there are three options of implementing a secured resource server as described in SSIA chapter 14.
  https://livebook.manning.com/book/spring-security-in-action/chapter-14/ 
- we can probably eliminate any potential  confusion by indicating in  milestone 2 we intend to re-use the final JWT access-token based OAuth2 server implementation in milestone1.3
+ we can probably eliminate any potential  confusion, by explictly declaring that we intend to re-use the final JWT access-token based OAuth2 server implementation in milestone1.3
 
-- in the event a student was unable to complete milestone 1.3, we may need a sample oauth server they can use so they're not stuck.
+- In the event a student was unable to complete milestone 1.3, we may need to provide a sample oauth server that they can use so they're not stuck.
    
--Some of the 7  requirements reference "client" which can be easily confused with 
-    I think only the last requirement means "client" in terms of an OAuth2 "Client" with OAuth2 client-credentials.
-    if we change the name client to user anywhere in the first 6 requirements it might prevent confusion
+- Some of the 7  requirements reference "client" which can be easily confused with the OAuth2 client
+  I think only the last requirement means "client" in terms of an OAuth2 "Client" with OAuth2 client-credentials.
+  If we change the name "client" to "user" anywhere it's used in the first 6 requirements, it might prevent confusion.
 
 
 
